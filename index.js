@@ -183,12 +183,27 @@
   }
 
   function switchScene(scene) {
+    // 씬 전환 시 로딩 화면 표시
+    var loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+      // 이미 로딩 중이면 그대로 유지
+    } else if (loadingOverlay) {
+      loadingOverlay.classList.remove('hidden');
+    }
+    
     stopAutorotate();
     scene.view.setParameters(scene.data.initialViewParameters);
     scene.scene.switchTo();
     startAutorotate();
     updateSceneName(scene);
     updateSceneList(scene);
+    
+    // 씬 전환 후 잠시 대기 후 로딩 화면 숨김
+    setTimeout(function() {
+      if (loadingOverlay) {
+        loadingOverlay.classList.add('hidden');
+      }
+    }, 1500);
   }
 
   function updateSceneName(scene) {

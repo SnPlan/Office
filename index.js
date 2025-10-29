@@ -386,7 +386,44 @@
     return null;
   }
 
+  // 로딩 화면 처리 - 이미지가 모두 로드될 때까지 대기
+  var loadingOverlay = document.getElementById('loadingOverlay');
+  var loadingOverlayHidden = false;
+  
+  // 이미지 로드 체크 함수
+  function hideLoadingOverlay() {
+    if (!loadingOverlayHidden && loadingOverlay) {
+      loadingOverlayHidden = true;
+      loadingOverlay.classList.add('hidden');
+    }
+  }
+  
+  // 모든 이미지가 로드되었는지 확인
+  function checkImagesLoaded() {
+    var images = document.querySelectorAll('#pano img, #pano canvas');
+    var allLoaded = true;
+    
+    // 이미지가 하나도 없으면 아직 로딩 중
+    if (images.length === 0) {
+      setTimeout(checkImagesLoaded, 100);
+      return;
+    }
+    
+    // 기본 로드 이벤트 사용
+    if (document.readyState === 'complete') {
+      // 최소 1초는 대기 (이미지 품질을 위해)
+      setTimeout(hideLoadingOverlay, 1000);
+    } else {
+      window.addEventListener('load', function() {
+        setTimeout(hideLoadingOverlay, 1000);
+      });
+    }
+  }
+  
   // Display the initial scene.
   switchScene(scenes[0]);
+  
+  // 이미지 로드 상태 확인 시작
+  checkImagesLoaded();
 
 })();
